@@ -13,14 +13,16 @@ const isCacheable = ctx => {
 }
 
 
-// 开发环境 和 正式环境 创建的render 的流程不一样，所以我们选择外部传入
+// 开发环境 和 正式环境 渲染的 的流程 一样，
+// 但是，创建的 renderer 是不同的， 所以我们选择外部传入*****************************
+
 module.exports = async (ctx, renderer, template) => {
   // 返回html内容，所以需要设置 headers
   ctx.headers['Content-Type'] = 'text/html'
 
   // 这个是用在服务端渲染的时候，把他传入进去的
   // VueServerRenderer 拿到这个 context 后进行 服务端路由设置等等
-  const context = { url: ctx.path }
+  const context = { url: ctx.path, ctx }
 
 
   // 判断是否可缓存，如果可缓存则先从缓存中查找
@@ -62,6 +64,7 @@ module.exports = async (ctx, renderer, template) => {
 
   } catch (err) {
     console.log('ssr render error', err)
+    ctx.status = 404
     throw err
   }
 }

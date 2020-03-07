@@ -2,6 +2,7 @@ const path = require('path')
 const Koa = require('koa')
 const Router = require('koa-router')
 const send = require('koa-send')
+const proxy = require('koa2-proxy-middleware')
 
 const staticRouter = require('./router/static')
 
@@ -36,6 +37,23 @@ app.use(async (ctx, next) => {
   }
 })
 
+/**
+ * 使用http代理请求转发，用于代理页面当中的http请求
+ * 这个代理请求得写在bodyparse的前面，
+ *
+ */
+const options = {
+  targets: {
+    // (.*) means anything
+    '/api/(.*)': {
+      target: 'https://cnodejs.org',
+      changeOrigin: true,
+    }
+  }
+}
+app.use(
+    proxy(options)
+)
 
 
 let pageRouter

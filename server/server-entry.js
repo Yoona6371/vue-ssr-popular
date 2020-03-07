@@ -15,6 +15,11 @@ export default context => {
           reject(err)
         })
 
+    if (context.url.indexOf('/api') !== -1) {
+      resolve()
+      return
+    }
+
     // 等到 router 将可能的异步组件和钩子函数解析完
     router.onReady(() => {
       // 我们可以通过 router.getMatchedComponents() 此方法 获得与 当前路由 匹配的组件数组
@@ -22,21 +27,28 @@ export default context => {
 
       // 匹配不到的路由，执行 reject 函数，并返回 信息
       if (!matchedComponents.length) {
-        return reject(new Error('no component matched'))
+        console.log(context.url, '   url');
+        console.log(context);
+        return reject(new Error('no component matched, 404'))
       }
 
-      Promise.all(matchedComponents.map(component => {
-        // 通过匹配到的实例, 可以调用实例的任何属性和方法
-        // 调用asyncData(), 还可以传参数
-        if (component.asyncData) {
-          // 组件中 定义asyncData, entry-server.js会编译所有匹配的组件中是否包含，包含则执行 asyncData
-          // 将state值挂在到context上，vue-server-renderer会将state序列化为window.__ INITIAL_STATE __
-          return component.asyncData({
-            route: router.currentRoute,
-            store
+      const promises = []
+      // 路由当中匹配到的组件，将他的async 方法，push到一个数组中
+      matchedComponents.forEach(item => {
+        if (Reflect.has(item, 'asyncData')) {
+          const promise = new Promise((resolve1, reject1) => {
+            item.asyncData({
+              route: router.currentRoute,
+              store
+            }).then(resolve1).catch(resolve1)
           })
+          promises.push(promise)
+          console.log(item);
         }
-      })).then(data => {
+      })
+
+      // 要等所有的数据获取完再执行
+      Promise.all(promises).then(() => {
         context.meta = app.$meta()
         context.state = store.state
         resolve(app)

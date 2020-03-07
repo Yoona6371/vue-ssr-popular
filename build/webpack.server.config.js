@@ -35,7 +35,7 @@ module.exports = merge(baseWebpackConfig, {
   // webpack 对 node_modules 编译时，只需要将所有 require 代码进行合并，
   // 不需要执行任何 loader，也不需要压缩，不需要 TreeShaking，
   // 因为这些在组件代码编译时全部已经做好了，这种构建效率几乎达到最大。
-  // 可以require 不需要打包
+  // 可以require 不需要打包到（服务端的）文件中
   externals: nodeExternals({
     // 白名单 node_modules 中不忽略的文件
     whitelist: /\.css$/
