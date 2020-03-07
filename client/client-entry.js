@@ -44,10 +44,14 @@ router.onReady(() => {
     // 路由当中匹配到的组件，将他的async 方法，push到一个数组中
     activated.forEach(item => {
       if (Reflect.has(item, 'asyncData')) {
-        promises.push(item.asyncData({
-          route: to,
-          store
-        }))
+        // 外层包装一个 promise 用于 promise.all 只要有一个 reject 直接500
+        const promise = new Promise((resolve1) => {
+          item.asyncData({
+            route: to,
+            store
+          }).then(resolve1).catch(resolve1)
+        })
+        promises.push(promise)
       }
     })
 
