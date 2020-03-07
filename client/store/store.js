@@ -24,7 +24,7 @@ export default function createStore() {
       },
       getList({commit}) {
         // https://cnodejs.org/api/v1/topics
-        return axios.get('/api/v1/topics')
+        return axios.get('/api/v1/t00opics')
             .then(res => {
               const list = res.data
               commit('getList', list)

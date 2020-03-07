@@ -57,7 +57,9 @@ router.onReady(() => {
       // 停止加载指示器(loading indicator)
       console.log('停止加载指示器(loading indicator)')
       next()
-    }).catch(next)
+    }).catch(() => {
+      next()
+    })
   })
 
   // 服务端渲染的 模板需要包含 这个 id为 app 的节点
