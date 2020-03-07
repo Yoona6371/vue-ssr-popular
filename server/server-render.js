@@ -22,7 +22,9 @@ module.exports = async (ctx, renderer, template) => {
 
   // 这个是用在服务端渲染的时候，把他传入进去的
   // VueServerRenderer 拿到这个 context 后进行 服务端路由设置等等
-  const context = { url: ctx.path, ctx }
+  const context = {
+    url: ctx.path
+  }
 
 
   // 判断是否可缓存，如果可缓存则先从缓存中查找
@@ -62,9 +64,9 @@ module.exports = async (ctx, renderer, template) => {
       microCache.set(ctx.url, html)
     }
 
+
   } catch (err) {
     console.log('ssr render error', err)
-    ctx.status = 404
     throw err
   }
 }

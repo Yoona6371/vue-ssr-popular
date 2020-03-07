@@ -20,6 +20,10 @@ export default function createRouter() {
         path: '/detail',
         name: 'detail',
         component: () => import('../views/detail.vue')
+      },
+      {
+        path: '*',
+        component: () => import('../views/NotFound')
       }
     ]
   })

@@ -28,7 +28,7 @@ export default context => {
       // 匹配不到的路由，执行 reject 函数，并返回 信息
       if (!matchedComponents.length) {
         console.log(context.url, '   url');
-        console.log(context);
+        // console.log(context);
         return reject(new Error('no component matched, 404'))
       }
 
@@ -36,14 +36,14 @@ export default context => {
       // 路由当中匹配到的组件，将他的async 方法，push到一个数组中
       matchedComponents.forEach(item => {
         if (Reflect.has(item, 'asyncData')) {
-          const promise = new Promise((resolve1, reject1) => {
+          // 外层包装一个 promise 用于 promise.all 只要有一个 reject 直接500
+          const promise = new Promise((resolve1) => {
             item.asyncData({
               route: router.currentRoute,
               store
             }).then(resolve1).catch(resolve1)
           })
           promises.push(promise)
-          console.log(item);
         }
       })
 
